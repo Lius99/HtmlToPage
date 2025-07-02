@@ -1,0 +1,691 @@
+/* 文件管理器 - 高级UI设计 */
+.file-manager-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.file-manager-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.file-manager-container {
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    border-radius: 20px;
+    width: 900px;
+    max-width: 90vw;
+    height: 650px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.file-manager-modal.show .file-manager-container {
+    transform: scale(1) translateY(0);
+}
+
+/* 文件管理器头部 - 高级设计 */
+.file-manager-header {
+    padding: 24px 28px;
+    background: linear-gradient(135deg, rgba(31, 111, 235, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+    border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-manager-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transition: left 0.8s ease;
+}
+
+.file-manager-header:hover::before {
+    left: 100%;
+}
+
+.file-manager-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    letter-spacing: -0.5px;
+}
+
+.file-manager-title i {
+    font-size: 24px;
+    background: linear-gradient(135deg, #1f6feb 0%, #58a6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.file-manager-close {
+    background: rgba(48, 54, 61, 0.6);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    color: #7d8590;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.file-manager-close:hover {
+    background: rgba(248, 81, 73, 0.2);
+    border-color: rgba(248, 81, 73, 0.3);
+    color: #f85149;
+    transform: rotate(90deg);
+}
+
+/* 文件管理器工具栏 - 高级设计 */
+.file-manager-toolbar {
+    padding: 20px 28px;
+    background: rgba(22, 27, 34, 0.5);
+    border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.file-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: rgba(13, 17, 23, 0.6);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    border-radius: 10px;
+    padding: 0 16px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-search::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(31, 111, 235, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+.file-search:focus-within {
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.2);
+}
+
+.file-search:focus-within::before {
+    transform: translateX(100%);
+}
+
+.file-search i {
+    color: #7d8590;
+    margin-right: 12px;
+    font-size: 14px;
+}
+
+.file-search input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #e6edf3;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+}
+
+.file-search input::placeholder {
+    color: #6e7681;
+}
+
+.file-manager-btn {
+    background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(31, 111, 235, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.file-manager-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.file-manager-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(31, 111, 235, 0.4);
+}
+
+.file-manager-btn:hover::before {
+    left: 100%;
+}
+
+.file-manager-btn.secondary {
+    background: rgba(48, 54, 61, 0.6);
+    box-shadow: none;
+}
+
+.file-manager-btn.secondary:hover {
+    background: rgba(48, 54, 61, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 文件列表容器 - 高级设计 */
+.file-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(110, 118, 129, 0.4) transparent;
+}
+
+.file-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.file-list-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.file-list-container::-webkit-scrollbar-thumb {
+    background: rgba(110, 118, 129, 0.4);
+    border-radius: 4px;
+}
+
+.file-list-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 148, 158, 0.5);
+}
+
+.file-list {
+    display: grid;
+    gap: 12px;
+}
+
+/* 文件项 - 高级设计 */
+.file-item {
+    background: rgba(22, 27, 34, 0.6);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(31, 111, 235, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.file-item:hover {
+    background: rgba(22, 27, 34, 0.8);
+    border-color: rgba(48, 54, 61, 1);
+    transform: translateX(4px);
+}
+
+.file-item:hover::before {
+    opacity: 1;
+}
+
+.file-item.selected {
+    background: rgba(31, 111, 235, 0.15);
+    border-color: rgba(31, 111, 235, 0.5);
+    box-shadow: 0 0 0 1px rgba(31, 111, 235, 0.2) inset;
+}
+
+.file-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #1f6feb 0%, #58a6ff 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(31, 111, 235, 0.3);
+    position: relative;
+}
+
+.file-icon::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, #1f6feb 0%, #58a6ff 100%);
+    border-radius: 12px;
+    opacity: 0;
+    z-index: -1;
+    filter: blur(8px);
+    transition: opacity 0.3s ease;
+}
+
+.file-item:hover .file-icon::after {
+    opacity: 0.5;
+}
+
+.file-icon i {
+    color: white;
+    font-size: 22px;
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e6edf3;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.2px;
+}
+
+.file-meta {
+    font-size: 12px;
+    color: #7d8590;
+    display: flex;
+    gap: 20px;
+}
+
+.file-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-meta span::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: #7d8590;
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+.file-meta span:first-child::before {
+    display: none;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.file-item:hover .file-actions {
+    opacity: 1;
+}
+
+.file-action-btn {
+    background: rgba(48, 54, 61, 0.6);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    color: #7d8590;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-action-btn:hover {
+    background: rgba(48, 54, 61, 0.8);
+    color: #e6edf3;
+    transform: translateY(-1px);
+}
+
+.file-action-btn.delete:hover {
+    background: rgba(248, 81, 73, 0.2);
+    border-color: rgba(248, 81, 73, 0.3);
+    color: #f85149;
+}
+
+/* 空状态 - 高级设计 */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #7d8590;
+}
+
+.empty-state i {
+    font-size: 64px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #1f6feb 0%, #58a6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.3;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #e6edf3;
+}
+
+.empty-state p {
+    font-size: 14px;
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+/* 文件管理器底部 - 高级设计 */
+.file-manager-footer {
+    padding: 20px 28px;
+    background: rgba(22, 27, 34, 0.5);
+    border-top: 1px solid rgba(48, 54, 61, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.file-stats {
+    font-size: 13px;
+    color: #7d8590;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-stats::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #3fb950;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.file-manager-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* 文件上传区域 - 高级设计 */
+.file-upload-area {
+    border: 2px dashed rgba(48, 54, 61, 0.8);
+    border-radius: 12px;
+    padding: 48px;
+    text-align: center;
+    margin: 24px 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: rgba(22, 27, 34, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload-area::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(31, 111, 235, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #1f6feb;
+    background: rgba(31, 111, 235, 0.05);
+}
+
+.file-upload-area:hover::before {
+    opacity: 1;
+}
+
+.file-upload-area.drag-over {
+    border-color: #1f6feb;
+    background: rgba(31, 111, 235, 0.1);
+    transform: scale(1.02);
+}
+
+.file-upload-area i {
+    font-size: 56px;
+    background: linear-gradient(135deg, #1f6feb 0%, #58a6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+}
+
+.file-upload-area h4 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.file-upload-area p {
+    font-size: 14px;
+    color: #7d8590;
+    line-height: 1.6;
+}
+
+/* 文件重命名输入框 - 高级设计 */
+.file-rename-input {
+    background: rgba(13, 17, 23, 0.8);
+    border: 2px solid #1f6feb;
+    color: #e6edf3;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    width: 100%;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.2);
+}
+
+/* 确认对话框 - 高级设计 */
+.confirm-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(13, 17, 23, 0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 420px;
+    width: 90%;
+}
+
+.confirm-dialog h4 {
+    color: #ffffff;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.confirm-dialog p {
+    color: #adbac7;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.confirm-dialog-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .file-manager-container {
+        width: 95vw;
+        height: 90vh;
+        border-radius: 16px;
+    }
+    
+    .file-manager-toolbar {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .file-search {
+        width: 100%;
+        order: 2;
+    }
+    
+    .file-item {
+        padding: 14px 16px;
+    }
+    
+    .file-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .file-icon i {
+        font-size: 18px;
+    }
+    
+    .file-meta {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+/* 加载动画 - 高级设计 */
+.file-manager-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+}
+
+.file-manager-loading .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(48, 54, 61, 0.8);
+    border-top-color: #1f6feb;
+    border-radius: 50%;
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 快捷键提示 - 高级设计 */
+.keyboard-hint {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    font-size: 11px;
+    color: #7d8590;
+    background: rgba(22, 27, 34, 0.8);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+/* 文件项动画 */
+@keyframes fileItemSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.file-item {
+    animation: fileItemSlideIn 0.3s ease-out backwards;
+}
+
+.file-item:nth-child(1) { animation-delay: 0.05s; }
+.file-item:nth-child(2) { animation-delay: 0.1s; }
+.file-item:nth-child(3) { animation-delay: 0.15s; }
+.file-item:nth-child(4) { animation-delay: 0.2s; }
+.file-item:nth-child(5) { animation-delay: 0.25s; } 

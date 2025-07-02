@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMLPro - 本地版</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 高级背景效果 */
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(125deg, #1a1a2e 0%, #0f0f23 25%, #16213e 50%, #0a0a0a 100%);
+            opacity: 0.9;
+        }
+        
+        .bg-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+        }
+        
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* 光晕效果 */
+        .glow-orb {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            animation: float-orb 15s ease-in-out infinite;
+        }
+        
+        .glow-orb-1 {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+            top: -400px;
+            left: -200px;
+        }
+        
+        .glow-orb-2 {
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+            bottom: -400px;
+            right: -200px;
+            animation-delay: -7.5s;
+        }
+        
+        .glow-orb-3 {
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+            top: 50%;
+            left: -400px;
+            width: 600px;
+            height: 600px;
+            animation-delay: -3.75s;
+        }
+        
+        .glow-orb-4 {
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+            top: 50%;
+            right: -400px;
+            width: 600px;
+            height: 600px;
+            animation-delay: -11.25s;
+        }
+        
+        @keyframes float-orb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+        
+        .welcome-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 80px;
+            border-radius: 32px;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 80px rgba(99, 102, 241, 0.15);
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            animation: container-appear 1s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        @keyframes container-appear {
+            from {
+                opacity: 0;
+                transform: translateY(60px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Logo 部分 */
+        .logo-section {
+            margin-bottom: 32px;
+        }
+        
+        .logo {
+            font-size: 56px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+        
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 20px;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 10px 30px rgba(99, 102, 241, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s ease-in-out infinite;
+        }
+        
+        @keyframes shine {
+            0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .logo-icon-inner {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 17px;
+        }
+        
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+        
+        .version-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #6366f1;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .tagline {
+            font-size: 19px;
+            color: #94a3b8;
+            margin-bottom: 64px;
+            line-height: 1.7;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+        
+        /* 功能卡片 */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 56px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 28px 24px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.2),
+                0 0 60px rgba(99, 102, 241, 0.1);
+        }
+        
+        .feature:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #a5b4fc;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        .feature h3 {
+            font-size: 16px;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* CTA 按钮 */
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 20px 64px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                0 4px 12px rgba(99, 102, 241, 0.4),
+                0 20px 40px rgba(99, 102, 241, 0.2);
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+                0 8px 20px rgba(99, 102, 241, 0.5),
+                0 30px 60px rgba(99, 102, 241, 0.3);
+        }
+        
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .cta-button:active {
+            transform: translateY(0);
+        }
+        
+        .footer {
+            margin-top: 40px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .welcome-container {
+                max-width: 700px;
+                padding: 64px;
+            }
+            
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .welcome-container {
+                padding: 48px 32px;
+                max-width: 520px;
+            }
+            
+            .logo {
+                font-size: 42px;
+            }
+            
+            .logo-icon {
+                width: 56px;
+                height: 56px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .tagline {
+                font-size: 17px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .welcome-container {
+                padding: 40px 24px;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+            
+            .tagline {
+                font-size: 16px;
+                margin-bottom: 48px;
+            }
+        }
+        
+        /* 渐进式加载动画 */
+        .logo-section {
+            animation: fade-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .tagline {
+            animation: fade-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+            opacity: 0;
+        }
+        
+        .feature {
+            animation: fade-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        
+        .feature:nth-child(1) { animation-delay: 0.2s; }
+        .feature:nth-child(2) { animation-delay: 0.3s; }
+        .feature:nth-child(3) { animation-delay: 0.4s; }
+        .feature:nth-child(4) { animation-delay: 0.5s; }
+        
+        .cta-button {
+            animation: fade-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+            opacity: 0;
+        }
+        
+        .footer {
+            animation: fade-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fade-slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+    <div class="glow-orb glow-orb-4"></div>
+    
+    <div class="welcome-container">
+        <div class="logo-section">
+            <div class="logo">
+                <div class="logo-icon">
+                    <div class="logo-icon-inner">
+                        <img src="logo.png" alt="HTMLPro Logo">
+                    </div>
+                </div>
+                HTMLPro
+            </div>
+            
+            <div class="version-badge">本地版 v1.0</div>
+        </div>
+        
+        <p class="tagline">
+            专业的HTML代码可视化编辑器<br>
+            让网页开发变得简单而高效
+        </p>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+                        <path d="M2 17L12 22L22 17" />
+                        <path d="M2 12L12 17L22 12" />
+                    </svg>
+                </div>
+                <h3>实时预览</h3>
+                <p>代码即时渲染，所见即所得</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 6V12L16 14" />
+                    </svg>
+                </div>
+                <h3>精准定位</h3>
+                <p>点击元素快速定位代码位置</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <path d="M9 9H15" />
+                        <path d="M9 15H15" />
+                    </svg>
+                </div>
+                <h3>可视化编辑</h3>
+                <p>悬浮面板直接编辑样式属性</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="5" y="2" width="14" height="20" rx="2" />
+                        <path d="M12 18H12.01" />
+                    </svg>
+                </div>
+                <h3>响应式预览</h3>
+                <p>支持多设备尺寸实时预览</p>
+            </div>
+        </div>
+        
+        <a href="editor.html" class="cta-button">立即开始</a>
+        
+        <div class="footer">
+            HTMLPro 本地版 - 无需联网，安全私密
+        </div>
+    </div>
+</body>
+</html> 

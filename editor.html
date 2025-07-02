@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMLPro - 本地版</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="editor.css">
+    <link rel="stylesheet" href="floating-editor.css">
+    <link rel="stylesheet" href="file-manager.css">
+    <!-- Monaco Editor CSS -->
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/editor/editor.main.css">
+    <!-- html-to-image library -->
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 拖动遮罩层 -->
+    <div class="resize-overlay"></div>
+    
+    <div class="app-container">
+        <!-- 头部工具栏 -->
+        <header class="toolbar">
+            <div class="toolbar-left">
+                <h1>
+                    <img src="logo.png" alt="HTMLPro">
+                    HTMLPro
+                </h1>
+                
+                <!-- 文件操作组 -->
+                <div class="btn-group">
+                    <button id="fileManagerBtn" class="btn btn-primary"><i class="fas fa-folder"></i> <span>文件管理</span></button>
+                    <button id="newBtn" class="btn"><i class="fas fa-plus"></i> <span>新建</span></button>
+                    <button id="saveBtn" class="btn"><i class="fas fa-save"></i> <span>保存</span></button>
+                    <input type="file" id="fileInput" accept=".html" style="display: none;">
+                    <button id="loadBtn" class="btn"><i class="fas fa-file-import"></i> <span>导入</span></button>
+                </div>
+                
+                <!-- 编辑操作组 -->
+                <div class="btn-group">
+                    <button id="clearBtn" class="btn"><i class="fas fa-eraser"></i> <span>清空</span></button>
+                    <button id="copyBtn" class="btn"><i class="fas fa-copy"></i> <span>复制</span></button>
+                    <button id="formatBtn" class="btn"><i class="fas fa-code"></i> <span>格式化</span></button>
+                </div>
+                
+                <!-- 导出操作组 -->
+                <div class="btn-group">
+                    <button id="downloadHtmlBtn" class="btn"><i class="fas fa-download"></i> <span>下载HTML</span></button>
+                    <button id="exportPngBtn" class="btn"><i class="fas fa-image"></i> <span>导出PNG</span></button>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button id="previewModeBtn" class="btn" title="点击进入全屏预览">
+                    <i class="fas fa-expand"></i> <span>全屏模式</span>
+                </button>
+                <button id="contactBtn" class="btn btn-special" title="联系作者">
+                    <i class="fas fa-user"></i> <span>contact</span>
+                </button>
+                <span class="status-text" id="statusText">就绪</span>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 左侧代码编辑器 -->
+            <div class="editor-panel" id="editorPanel">
+                <div class="panel-header">
+                    <span class="panel-title">HTML 代码编辑器</span>
+                    <div class="editor-controls">
+                        <button class="control-btn" id="wrapToggle" title="切换代码换行">换行</button>
+                        <button class="control-btn" id="miniMapToggle" title="切换小地图">小地图</button>
+                    </div>
+                </div>
+                <div class="editor-container" id="editorContainer"></div>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="resizer" id="resizer"></div>
+
+            <!-- 右侧预览区域 -->
+            <div class="preview-panel" id="previewPanel">
+                <div class="panel-header">
+                    <span class="panel-title">实时预览</span>
+                    <div class="preview-controls">
+                        <button class="control-btn" id="refreshBtn" title="刷新预览">刷新</button>
+                        <button class="control-btn" id="responsiveToggle" title="响应式视图">响应式</button>
+                        <button class="control-btn" id="exportPngBtnFloat" title="导出PNG">导出PNG</button>
+                        <select id="deviceSelect" class="device-select">
+                            <option value="desktop">桌面端</option>
+                            <option value="tablet">平板</option>
+                            <option value="mobile">手机</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"></iframe>
+                    <!-- 编辑覆盖层 -->
+                    <div class="edit-overlay" id="editOverlay" style="display: none;">
+                        <div class="edit-tooltip">
+                            <span id="editTooltipText">双击编辑</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部状态栏 -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span id="cursorPosition">行 1, 列 1</span>
+                <span id="documentStats">0 行, 0 字符</span>
+            </div>
+            <div class="status-right">
+                <span id="lastSaved">未保存</span>
+                <span class="encoding">UTF-8</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 编辑模态框 -->
+    <div class="modal" id="editModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑元素</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="elementTag">标签:</label>
+                    <input type="text" id="elementTag" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="elementText">文本内容:</label>
+                    <textarea id="elementText" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="elementAttrs">属性:</label>
+                    <textarea id="elementAttrs" rows="4" placeholder='例如: class="btn" id="myBtn"'></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="saveChanges">保存修改</button>
+                <button class="btn" id="cancelChanges">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 悬浮编辑面板 -->
+    <div class="floating-editor" id="floatingEditor">
+        <div class="floating-editor-header">
+            <div class="element-tag">
+                <div class="tag-icon" id="tagIcon">H1</div>
+                <span id="tagName">h1</span>
+            </div>
+            <button class="close-btn" id="floatingClose">&times;</button>
+        </div>
+        
+        <div class="floating-editor-body">
+            <!-- 内容编辑 -->
+            <div class="editor-section">
+                <div class="section-title">CONTENT</div>
+                <textarea class="content-editor" id="contentEditor" placeholder="点击预览元素，定位到对应代码"></textarea>
+            </div>
+            
+            <!-- 间距控制 -->
+            <div class="editor-section">
+                <div class="section-title">SPACING</div>
+                <div class="spacing-controls">
+                    <div class="spacing-group">
+                        <div class="spacing-label">
+                            <span>Margin</span>
+                        </div>
+                        <div class="spacing-inputs">
+                            <input type="number" class="spacing-input" id="marginV" placeholder="V" min="0" title="垂直边距">
+                            <input type="number" class="spacing-input" id="marginH" placeholder="H" min="0" title="水平边距">
+                        </div>
+                    </div>
+                    
+                    <div class="spacing-group">
+                        <div class="spacing-label">
+                            <span>Padding</span>
+                        </div>
+                        <div class="spacing-inputs">
+                            <input type="number" class="spacing-input" id="paddingV" placeholder="V" min="0" title="垂直内边距">
+                            <input type="number" class="spacing-input" id="paddingH" placeholder="H" min="0" title="水平内边距">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 字体控制 -->
+            <div class="editor-section">
+                <div class="section-title">TYPOGRAPHY</div>
+                <div class="font-controls">
+                    <div class="font-row">
+                        <select class="select-input" id="fontSize">
+                            <option value="">字体大小</option>
+                            <option value="12px">12px</option>
+                            <option value="14px">14px</option>
+                            <option value="16px">16px</option>
+                            <option value="18px">18px</option>
+                            <option value="20px">20px</option>
+                            <option value="24px">24px</option>
+                            <option value="28px">28px</option>
+                            <option value="32px">32px</option>
+                            <option value="36px">36px</option>
+                            <option value="48px">48px</option>
+                        </select>
+                        
+                        <select class="select-input" id="fontWeight">
+                            <option value="">字体粗细</option>
+                            <option value="normal">正常</option>
+                            <option value="bold">粗体</option>
+                            <option value="lighter">较细</option>
+                            <option value="bolder">较粗</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="300">300</option>
+                            <option value="400">400</option>
+                            <option value="500">500</option>
+                            <option value="600">600</option>
+                            <option value="700">700</option>
+                            <option value="800">800</option>
+                            <option value="900">900</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 文字颜色 -->
+                    <div class="section-subtitle">文字颜色</div>
+                    <div class="color-picker" id="colorPicker">
+                        <div class="color-preview" id="colorPreview" style="background-color: #000000;"></div>
+                        <input type="color" class="color-input" id="colorInput" value="#000000">
+                        <input type="text" class="color-text" id="colorText" value="transparent" placeholder="transparent">
+                    </div>
+                    
+                    <!-- 背景颜色 -->
+                    <div class="section-subtitle" style="margin-top: 16px;">背景颜色</div>
+                    <div class="color-picker" id="bgColorPicker">
+                        <div class="color-preview" id="bgColorPreview" style="background-color: transparent;"></div>
+                        <input type="color" class="color-input" id="bgColorInput" value="#ffffff">
+                        <input type="text" class="color-text" id="bgColorText" value="transparent" placeholder="transparent">
+                    </div>
+                    
+                    <!-- 对齐控制 -->
+                    <div class="alignment-controls">
+                        <button class="alignment-btn" data-align="left" title="左对齐">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 21v-2h18v2H3zm0-4v-2h12v2H3zm0-4v-2h18v2H3zm0-4v-2h12v2H3zm0-4v-2h18v2H3z"/>
+                            </svg>
+                        </button>
+                        <button class="alignment-btn" data-align="center" title="居中对齐">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 21v-2h18v2H3zm3-4v-2h12v2H6zm-3-4v-2h18v2H3zm3-4v-2h12v2H6zm-3-4v-2h18v2H3z"/>
+                            </svg>
+                        </button>
+                        <button class="alignment-btn" data-align="right" title="右对齐">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 21v-2h18v2H3zm6-4v-2h12v2H9zm-6-4v-2h18v2H3zm6-4v-2h12v2H9zm-6-4v-2h18v2H3z"/>
+                            </svg>
+                        </button>
+                        <button class="alignment-btn" data-align="justify" title="两端对齐">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 21v-2h18v2H3zm0-4v-2h18v2H3zm0-4v-2h18v2H3zm0-4v-2h18v2H3zm0-4v-2h18v2H3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 高级设置 -->
+            <div class="advanced-toggle" id="advancedToggle">
+                <div class="advanced-title">
+                    <span class="toggle-icon">▶</span>
+                    高级设置
+                </div>
+            </div>
+            <div class="advanced-content" id="advancedContent">
+                <div class="form-group">
+                    <label>自定义 CSS:</label>
+                    <textarea id="customCSS" rows="4" placeholder="例如: color: #ff0000; background: linear-gradient(...)"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="floating-editor-footer">
+            <button class="footer-btn discard" id="floatingDiscardBtn">取消</button>
+            <button class="footer-btn save" id="floatingSaveBtn">保存更改</button>
+        </div>
+    </div>
+
+    <!-- 文件管理器模态框 -->
+    <div class="file-manager-modal" id="fileManagerModal">
+        <div class="file-manager-container">
+            <div class="file-manager-header">
+                <h3 class="file-manager-title">
+                    <i class="fas fa-folder-open"></i>
+                    文件管理器
+                </h3>
+                <button class="file-manager-close" id="fileManagerClose">&times;</button>
+            </div>
+            
+            <div class="file-manager-toolbar">
+                <div class="file-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="fileSearchInput" placeholder="搜索文件...">
+                </div>
+                <button class="file-manager-btn" id="newFileBtn">
+                    <i class="fas fa-plus"></i>
+                    新建文件
+                </button>
+                <button class="file-manager-btn secondary" id="importFileBtn">
+                    <i class="fas fa-upload"></i>
+                    导入
+                </button>
+                <input type="file" id="importFileInput" accept=".html" style="display: none;" multiple>
+            </div>
+            
+            <div class="file-list-container" id="fileListContainer">
+                <div class="file-list" id="fileList">
+                    <!-- 文件列表将在这里动态生成 -->
+                </div>
+                
+                <!-- 空状态 -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>暂无文件</h3>
+                    <p>点击"新建文件"或拖拽HTML文件到此处开始</p>
+                </div>
+            </div>
+            
+            <div class="file-manager-footer">
+                <div class="file-stats" id="fileStats">
+                    0 个文件 · 0 KB
+                </div>
+                <div class="file-manager-actions">
+                    <button class="file-manager-btn secondary" id="clearAllBtn">
+                        <i class="fas fa-trash"></i>
+                        清空全部
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义通知弹窗 -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Monaco Editor JavaScript -->
+    <script>var require = { paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } };</script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/editor/editor.main.nls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/editor/editor.main.js"></script>
+    
+    <!-- 文件管理器 -->
+    <script src="file-manager.js"></script>
+    <script src="file-manager-ui.js"></script>
+    
+    <!-- 元素定位器 -->
+    <script src="element-locator.js"></script>
+    
+    <!-- 元素更新器 -->
+    <script src="element-updater.js"></script>
+    
+    <!-- 主要逻辑脚本 -->
+    <script src="editor.js"></script>
+</body>
+</html> 
